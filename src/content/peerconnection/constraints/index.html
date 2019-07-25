@@ -35,58 +35,13 @@
 
     <h1><a href="//webrtc.github.io/samples/" title="WebRTC samples homepage">WebRTC samples</a> <span>Constraints &amp; statistics</span>
     </h1>
-
-    <section id="blurb">
-        <p>This demo shows ways to use constraints and statistics in WebRTC applications.</p>
-        <p>Set camera constraints, and click <strong>Get media</strong> to (re)open the camera with these included.
-            Click <strong>Connect</strong> to create a (local) peer connection. The RTCPeerConnection objects <code>localPeerConnection</code>
-            and <code>remotePeerConnection</code> can be inspected from the console.</p>
-        <p>Setting a value to zero will remove that constraint. </p>
-        <p>The lefthand video shows the output of <code>getUserMedia()</code>; on the right is the video after being
-            passed through the peer connection. The transmission bitrate is displayed below the righthand video.</p>
-    </section>
-
+    
     <div>
         <button id="getMedia">Get media</button>
         <button id="connect" disabled>Connect</button>
         <button id="hangup" disabled>Hang Up</button>
     </div>
-
-
-    <section id="constraints">
-        <div id="getUserMedia">
-            <div class="input">
-                <h2>Camera constraints</h2>
-                <div id="minWidth">
-                    <label>Min width <span>300</span>px:</label>
-                    <input type="range" min="0" max="4096" value="300">
-                </div>
-                <div id="maxWidth">
-                    <label>Max width <span>640</span>px:</label>
-                    <input type="range" min="0" max="4096" value="640">
-                </div>
-                <div id="minHeight">
-                    <label>Min height <span>200</span>px:</label>
-                    <input type="range" min="0" max="2160" value="200">
-                </div>
-                <div id="maxHeight">
-                    <label>Max height <span>480</span>px:</label>
-                    <input type="range" min="0" max="2160" value="480">
-                </div>
-                <div id="minFramerate">
-                    <label>Min frameRate <span>0</span>fps:</label>
-                    <input type="range" min="0" max="60" value="0">
-                </div>
-                <div id="maxFramerate">
-                    <label>Max frameRate <span>0</span>fps:</label>
-                    <input type="range" min="0" max="60" value="0">
-                </div>
-            </div>
-            <div id="getUserMediaConstraints" class="output"></div>
-        </div>
-
-    </section>
-
+    <div id="chart" style="min-width:400px;height:400px"></div>
     <section id="video">
         <div id="localVideo">
             <video playsinline autoplay muted></video>
@@ -99,6 +54,46 @@
             <div id="peer"></div>
         </div>
     </section>
+    
+    <section id="constraints">
+        <div id="getUserMedia">
+            <div class="input">
+                <h2>Camera constraints</h2>
+                <div class="inputgroup">
+                    <div id="minWidth">
+                        <label>Min width <span>300</span>px:</label>
+                        <input type="range" min="0" max="4096" value="300">
+                    </div>
+                    <div id="maxWidth">
+                        <label>Max width <span>640</span>px:</label>
+                        <input type="range" min="0" max="4096" value="640">
+                    </div>
+                </div>
+                <div class="inputgroup">
+                <div id="minHeight">
+                    <label>Min height <span>200</span>px:</label>
+                    <input type="range" min="0" max="2160" value="200">
+                </div>
+                <div id="maxHeight">
+                    <label>Max height <span>480</span>px:</label>
+                    <input type="range" min="0" max="2160" value="480">
+                </div>
+                </div>
+                <div class="inputgroup">
+                    <div id="minFramerate">
+                        <label>Min frameRate <span>0</span>fps:</label>
+                        <input type="range" min="0" max="60" value="0">
+                    </div>
+                    <div id="maxFramerate">
+                        <label>Max frameRate <span>0</span>fps:</label>
+                        <input type="range" min="0" max="60" value="0">
+                    </div>
+                </div>
+            </div>
+            <div id="getUserMediaConstraints" class="output"></div>
+        </div>
+
+    </section>
 
     <section id="statistics">
         <div id="senderStats"></div>
@@ -107,12 +102,23 @@
 
     <a href="https://github.com/webrtc/samples/tree/gh-pages/src/content/peerconnection/constraints"
        title="View source for this page on GitHub" id="viewSource">View source on GitHub</a>
+<section id="blurb">
+        <p>This demo shows ways to use constraints and statistics in WebRTC applications.</p>
+        <p>Set camera constraints, and click <strong>Get media</strong> to (re)open the camera with these included.
+            Click <strong>Connect</strong> to create a (local) peer connection. The RTCPeerConnection objects <code>localPeerConnection</code>
+            and <code>remotePeerConnection</code> can be inspected from the console.</p>
+        <p>Setting a value to zero will remove that constraint. </p>
+        <p>The lefthand video shows the output of <code>getUserMedia()</code>; on the right is the video after being
+            passed through the peer connection. The transmission bitrate is displayed below the righthand video.</p>
+    </section>
 
 </div>
-
-<script src="https://webrtc.github.io/adapter/adapter-latest.js"></script>
+<script src="https://code.highcharts.com.cn/highcharts/highcharts.js"></script>
+<script src="https://code.highcharts.com.cn/highcharts/modules/exporting.js"></script>
+<script src="https://img.hcharts.cn/highcharts-plugins/highcharts-zh_CN.js"></script>
 <script src="js/main.js" async></script>
 <script src="../../../js/lib/ga.js"></script>
+<script src="../../../js/lib/adapter-latest.js"></script>
 
 </body>
 </html>

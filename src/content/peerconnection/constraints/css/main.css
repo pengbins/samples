@@ -19,12 +19,17 @@ div.input {
   display: inline-block;
   margin: 0 4px 0 0;
   vertical-align: top;
-  width: 310px;
+  width: 630px;
 }
+
 
 div.input > div {
   margin: 0 0 20px 0;
   vertical-align: top;
+}
+
+div.inputgroup {
+  display: inline-block;
 }
 
 div.output {

@@ -43,6 +43,76 @@ let remotePeerConnection;
 let localStream;
 let bytesPrev;
 let timestampPrev;
+let vkbps = 0;
+
+Highcharts.setOptions({
+    global: {
+        useUTC: false
+    }
+});
+function activeLastPointToolip(chart) {
+    var points = chart.series[0].points;
+    chart.tooltip.refresh(points[points.length -1]);
+}
+var chart = Highcharts.chart('chart', {
+    chart: {
+        type: 'spline',
+        marginRight: 10,
+        events: {
+            load: function () {
+                var series = this.series[0],
+                    chart = this;
+                activeLastPointToolip(chart);
+                setInterval(function () {
+                    var x = (new Date()).getTime(), 
+                        y = vkbps;
+                    series.addPoint([x, y], true, true);
+                    activeLastPointToolip(chart);
+                }, 1000);
+            }
+        }
+    },
+    title: {
+        text: 'video bitrate'
+    },
+    xAxis: {
+        type: 'datetime',
+        tickPixelInterval: 1
+    },
+    yAxis: {
+        title: {
+            text: null
+        }
+    },
+    tooltip: {
+        formatter: function () {
+            return '<b>' + this.series.name + '</b><br/>' +
+                Highcharts.dateFormat('%Y-%m-%d %H:%M:%S', this.x) + '<br/>' +
+                Highcharts.numberFormat(this.y, 2);
+        }
+    },
+    legend: {
+        enabled: false
+    },
+    series: [{
+        name: 'bitrate',
+        data: (function () {
+            var data = [],
+                time = (new Date()).getTime(),
+                i;
+            for (i = -39; i <= 0; i += 1) {
+                data.push({
+                    x: time + i * 1000,
+                    y: 0
+                });
+            }
+            console.log(data);
+            return data;
+        }())
+    }]
+});
+
+
 
 main();
 
@@ -210,6 +280,7 @@ function showRemoteStats(results) {
       if (timestampPrev) {
         bitrate = 8 * (bytes - bytesPrev) / (now - timestampPrev);
         bitrate = Math.floor(bitrate);
+        vkbps = bitrate;
       }
       bytesPrev = bytes;
       timestampPrev = now;
@@ -306,3 +377,4 @@ function displayRangeValue(e) {
   span.textContent = e.target.value;
   displayGetUserMediaConstraints();
 }
+
