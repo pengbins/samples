@@ -62,6 +62,13 @@
             <div class="input">
                 <h2>Video constraints</h2>
                 <div class="inputgroup">
+                    <button id="res_416x240">416x240</button>
+                    <button id="res_640x480">640x480</button>
+                    <button id="res_1280x720">1280x720</button>
+                    <button id="res_1920x1080">1920x1080</button>
+                    <button id="res_2560x1440">2560x1440</button>
+                </div>
+                <div class="inputgroup">
                     <div id="minWidth">
                         <label>Min width <span>640</span>px:</label>
                         <input type="range" min="0" max="4096" value="640">
@@ -90,13 +97,6 @@
                         <label>Max frameRate <span>5</span>fps:</label>
                         <input type="range" min="0" max="60" value="5">
                     </div>
-                </div>
-                <div class="inputgroup">
-                    <button id="res_416x240">416x240</button>
-                    <button id="res_640x480">640x480</button>
-                    <button id="res_1280x720">1280x720</button>
-                    <button id="res_1920x1080">1920x1080</button>
-                    <button id="res_2560x1440">2560x1440</button>
                 </div>
             </div>
             <div id="getUserMediaConstraints" class="output"></div>
