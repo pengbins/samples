@@ -113,7 +113,5 @@ video {
     width: calc(50% - 14px);
   }
 
-  video {
-    height: 96px;
-  }
+  
 }

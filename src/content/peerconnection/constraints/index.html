@@ -38,8 +38,10 @@
     
     <div>
         <button id="getMedia">Get media</button>
+        <button id="getDisplay">Share screen</button>
         <button id="connect" disabled>Connect</button>
         <button id="hangup" disabled>Hang Up</button>
+        <button id="fitsize">Fit size</button>
     </div>
     <div id="chart" style="min-width:400px;height:400px"></div>
     <section id="video">
@@ -58,11 +60,11 @@
     <section id="constraints">
         <div id="getUserMedia">
             <div class="input">
-                <h2>Camera constraints</h2>
+                <h2>Video constraints</h2>
                 <div class="inputgroup">
                     <div id="minWidth">
-                        <label>Min width <span>300</span>px:</label>
-                        <input type="range" min="0" max="4096" value="300">
+                        <label>Min width <span>640</span>px:</label>
+                        <input type="range" min="0" max="4096" value="640">
                     </div>
                     <div id="maxWidth">
                         <label>Max width <span>640</span>px:</label>
@@ -71,8 +73,8 @@
                 </div>
                 <div class="inputgroup">
                 <div id="minHeight">
-                    <label>Min height <span>200</span>px:</label>
-                    <input type="range" min="0" max="2160" value="200">
+                    <label>Min height <span>480</span>px:</label>
+                    <input type="range" min="0" max="2160" value="480">
                 </div>
                 <div id="maxHeight">
                     <label>Max height <span>480</span>px:</label>
@@ -81,13 +83,20 @@
                 </div>
                 <div class="inputgroup">
                     <div id="minFramerate">
-                        <label>Min frameRate <span>0</span>fps:</label>
-                        <input type="range" min="0" max="60" value="0">
+                        <label>Min frameRate <span>5</span>fps:</label>
+                        <input type="range" min="0" max="60" value="5">
                     </div>
                     <div id="maxFramerate">
-                        <label>Max frameRate <span>0</span>fps:</label>
-                        <input type="range" min="0" max="60" value="0">
+                        <label>Max frameRate <span>5</span>fps:</label>
+                        <input type="range" min="0" max="60" value="5">
                     </div>
+                </div>
+                <div class="inputgroup">
+                    <button id="res_416x240">416x240</button>
+                    <button id="res_640x480">640x480</button>
+                    <button id="res_1280x720">1280x720</button>
+                    <button id="res_1920x1080">1920x1080</button>
+                    <button id="res_2560x1440">2560x1440</button>
                 </div>
             </div>
             <div id="getUserMediaConstraints" class="output"></div>

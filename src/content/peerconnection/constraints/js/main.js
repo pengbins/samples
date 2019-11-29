@@ -9,12 +9,24 @@
 'use strict';
 
 const getMediaButton = document.querySelector('button#getMedia');
+const getDisplayButton = document.querySelector('button#getDisplay');
 const connectButton = document.querySelector('button#connect');
 const hangupButton = document.querySelector('button#hangup');
+const fitSizeButton = document.querySelector('button#fitsize');
+
 
 getMediaButton.onclick = getMedia;
 connectButton.onclick = createPeerConnection;
 hangupButton.onclick = hangup;
+getDisplayButton.onclick = getDisplay;
+fitSizeButton.onclick = fitVideoSize;
+
+document.querySelector('button#res_416x240').onclick = setRes416x240;
+document.querySelector('button#res_640x480').onclick = setRes640x480;
+document.querySelector('button#res_1280x720').onclick = setRes1280x720;
+document.querySelector('button#res_1920x1080').onclick = setRes1920x1080;
+document.querySelector('button#res_2560x1440').onclick = setRes2560x1440;
+
 
 const minWidthInput = document.querySelector('div#minWidth input');
 const maxWidthInput = document.querySelector('div#maxWidth input');
@@ -27,6 +39,24 @@ minWidthInput.onchange = maxWidthInput.onchange =
   minHeightInput.onchange = maxHeightInput.onchange =
     minFramerateInput.onchange = maxFramerateInput.onchange = displayRangeValue;
 
+
+function setRes(width, height) {
+  minWidthInput.value = width;
+  maxWidthInput.value = width;
+  minHeightInput.value = height;
+  maxHeightInput.value = height;
+  minWidthInput.dispatchEvent( new Event('change'));
+  maxWidthInput.dispatchEvent( new Event('change'));
+  minHeightInput.dispatchEvent( new Event('change'));
+  maxHeightInput.dispatchEvent( new Event('change'));
+}
+
+function setRes416x240() {  setRes(416,240);  }
+function setRes640x480() {  setRes(640,480);  }
+function setRes1280x720() {  setRes(1280,720);  }
+function setRes1920x1080() {  setRes(1920,1080);  }
+function setRes2560x1440() {  setRes(2560,1440);  }
+
 const getUserMediaConstraintsDiv = document.querySelector('div#getUserMediaConstraints');
 const bitrateDiv = document.querySelector('div#bitrate');
 const peerDiv = document.querySelector('div#peer');
@@ -37,6 +67,30 @@ const localVideo = document.querySelector('div#localVideo video');
 const remoteVideo = document.querySelector('div#remoteVideo video');
 const localVideoStatsDiv = document.querySelector('div#localVideo div');
 const remoteVideoStatsDiv = document.querySelector('div#remoteVideo div');
+
+const videoSection = document.querySelector('section#video');
+const container = document.querySelector('div#container');
+
+let isFitSize = false;
+function fitVideoSize() {
+  isFitSize = !isFitSize;
+  if (isFitSize) {
+    videoSection.id = 'fitsize';
+    localVideo.style.width = minWidthInput.value.toString() +"px";
+    remoteVideo.style.width = minWidthInput.value.toString() + "px";
+
+    localVideo.style.height = minHeightInput.value.toString() +"px";
+    remoteVideo.style.height = minHeightInput.value.toString() +"px";
+    container.style.maxWidth= "100%" ;
+    container.style.padding = "0px";
+    
+  } else {
+    videoSection.id = 'video'
+    localVideo.style = '';
+    remoteVideo.style = '';
+    container.style = '';
+  }
+}
 
 let localPeerConnection;
 let remotePeerConnection;
@@ -145,10 +199,12 @@ function hangup() {
 
   hangupButton.disabled = true;
   getMediaButton.disabled = false;
+  getDisplayButton.disabled = false;
 }
 
 function getMedia() {
   getMediaButton.disabled = true;
+  getDisplayButton.disabled = true;
   if (localStream) {
     localStream.getTracks().forEach(track => track.stop());
     const videoTracks = localStream.getVideoTracks();
@@ -163,6 +219,29 @@ function getMedia() {
       alert(message);
       console.log(message);
       getMediaButton.disabled = false;
+      getDisplayButton.disabled = false;
+    });
+}
+
+function getDisplay() {
+  getMediaButton.disabled = true;
+  getDisplayButton.disabled = true;
+  if (localStream) {
+    localStream.getTracks().forEach(track => track.stop());
+    const videoTracks = localStream.getVideoTracks();
+    for (let i = 0; i !== videoTracks.length; ++i) {
+      videoTracks[i].stop();
+    }
+  }
+  fitVideoSize();
+  navigator.mediaDevices.getDisplayMedia(getDisplayConstraints())
+    .then(gotStream)
+    .catch(e => {
+      const message = `getUserMedia error: ${e.name}\nPermissionDeniedError may mean invalid constraints.`;
+      alert(message);
+      console.log(message);
+      getMediaButton.disabled = false;
+      getDisplayButton.disabled = false;
     });
 }
 
@@ -171,37 +250,63 @@ function gotStream(stream) {
   console.log('GetUserMedia succeeded');
   localStream = stream;
   localVideo.srcObject = stream;
+
+  const videoTrack = stream.getVideoTracks()[0];
+  console.info("Track settings:");
+  console.info(JSON.stringify(videoTrack.getSettings(), null, 2));
+  console.info("Track constraints:");
+  console.info(JSON.stringify(videoTrack.getConstraints(), null, 2));
+}
+
+function getVideoConstraints() {
+  const video = {};
+  if (minWidthInput.value !== '0') {
+    video.width = {};
+    video.width.min = minWidthInput.value;
+  }
+  if (maxWidthInput.value !== '0') {
+    video.width = video.width || {};
+    video.width.max = maxWidthInput.value;
+  }
+  if (minHeightInput.value !== '0') {
+    video.height = {};
+    video.height.min = minHeightInput.value;
+  }
+  if (maxHeightInput.value !== '0') {
+    video.height = video.height || {};
+    video.height.max = maxHeightInput.value;
+  }
+  if (minFramerateInput.value !== '0') {
+    video.frameRate = {};
+    video.frameRate.min = minFramerateInput.value;
+  }
+  if (maxFramerateInput.value !== '0') {
+    video.frameRate = video.frameRate || {};
+    video.frameRate.max = maxFramerateInput.value;
+  }
+  return video
 }
 
 function getUserMediaConstraints() {
   const constraints = {};
   constraints.audio = true;
-  constraints.video = {};
+  constraints.video = getVideoConstraints();
+  return constraints;
+}
+
+function getDisplayConstraints() {
+  const constraints = {};
+  const video = {};
   if (minWidthInput.value !== '0') {
-    constraints.video.width = {};
-    constraints.video.width.min = minWidthInput.value;
-  }
-  if (maxWidthInput.value !== '0') {
-    constraints.video.width = constraints.video.width || {};
-    constraints.video.width.max = maxWidthInput.value;
+    video.width = minWidthInput.value;
   }
   if (minHeightInput.value !== '0') {
-    constraints.video.height = {};
-    constraints.video.height.min = minHeightInput.value;
-  }
-  if (maxHeightInput.value !== '0') {
-    constraints.video.height = constraints.video.height || {};
-    constraints.video.height.max = maxHeightInput.value;
+    video.height = minHeightInput.value;
   }
   if (minFramerateInput.value !== '0') {
-    constraints.video.frameRate = {};
-    constraints.video.frameRate.min = minFramerateInput.value;
+    video.frameRate = minFramerateInput.value;
   }
-  if (maxFramerateInput.value !== '0') {
-    constraints.video.frameRate = constraints.video.frameRate || {};
-    constraints.video.frameRate.max = maxFramerateInput.value;
-  }
-
+  constraints.video = video;
   return constraints;
 }
 
