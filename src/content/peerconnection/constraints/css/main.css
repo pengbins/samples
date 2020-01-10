@@ -63,7 +63,7 @@ section#video > div {
   display: inline-block;
   margin: 0 20px 0 0;
   vertical-align: top;
-  width: calc(50% - 22px);
+  width: calc(50% - 24px);
 }
 
 section#video > div div {

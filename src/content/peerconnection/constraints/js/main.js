@@ -8,6 +8,7 @@
 
 'use strict';
 
+const codecSelector = document.querySelector('select#codec');
 const getMediaButton = document.querySelector('button#getMedia');
 const getDisplayButton = document.querySelector('button#getDisplay');
 const connectButton = document.querySelector('button#connect');
@@ -88,7 +89,8 @@ function fitVideoSize() {
     videoSection.id = 'video'
     localVideo.style = '';
     remoteVideo.style = '';
-    container.style = '';
+    container.style.maxWidth = "100em";
+    container.style.padding = "1em 1.5em 1.3em 1.5em";
   }
 }
 
@@ -346,9 +348,12 @@ function createPeerConnection() {
       remoteVideo.srcObject = e.streams[0];
     }
   };
+  console.log("before create offer ");
   localPeerConnection.createOffer().then(
     desc => {
-      console.log('localPeerConnection offering');
+      console.log('localPeerConnection offering ', desc);
+      desc.sdp = forceChosenCodec(desc.sdp);
+      console.log('set offering sdp', desc);
       localPeerConnection.setLocalDescription(desc);
       remotePeerConnection.setRemoteDescription(desc);
       remotePeerConnection.createAnswer().then(
@@ -483,3 +488,88 @@ function displayRangeValue(e) {
   displayGetUserMediaConstraints();
 }
 
+
+
+function forceChosenCodec(sdp) {
+  return maybePreferCodec(sdp, 'video', 'send', codecSelector.value);
+}
+
+// Copied from AppRTC's sdputils.js:
+
+// Sets |codec| as the default |type| codec if it's present.
+// The format of |codec| is 'NAME/RATE', e.g. 'opus/48000'.
+function maybePreferCodec(sdp, type, dir, codec) {
+  const str = `${type} ${dir} codec`;
+  if (codec === '') {
+    console.log(`No preference on ${str}.`);
+    return sdp;
+  }
+
+  console.log(`Prefer ${str}: ${codec}`);
+
+  const sdpLines = sdp.split('\r\n');
+
+  // Search for m line.
+  const mLineIndex = findLine(sdpLines, 'm=', type);
+  if (mLineIndex === null) {
+    return sdp;
+  }
+
+  // If the codec is available, set it as the default in m line.
+  const codecIndex = findLine(sdpLines, 'a=rtpmap', codec);
+  console.log('codecIndex', codecIndex);
+  if (codecIndex) {
+    const payload = getCodecPayloadType(sdpLines[codecIndex]);
+    if (payload) {
+      sdpLines[mLineIndex] = setDefaultCodec(sdpLines[mLineIndex], payload);
+    }
+  }
+
+  sdp = sdpLines.join('\r\n');
+  return sdp;
+}
+
+// Find the line in sdpLines that starts with |prefix|, and, if specified,
+// contains |substr| (case-insensitive search).
+function findLine(sdpLines, prefix, substr) {
+  return findLineInRange(sdpLines, 0, -1, prefix, substr);
+}
+
+// Find the line in sdpLines[startLine...endLine - 1] that starts with |prefix|
+// and, if specified, contains |substr| (case-insensitive search).
+function findLineInRange(sdpLines, startLine, endLine, prefix, substr) {
+  const realEndLine = endLine !== -1 ? endLine : sdpLines.length;
+  for (let i = startLine; i < realEndLine; ++i) {
+    if (sdpLines[i].indexOf(prefix) === 0) {
+      if (!substr ||
+        sdpLines[i].toLowerCase().indexOf(substr.toLowerCase()) !== -1) {
+        return i;
+      }
+    }
+  }
+  return null;
+}
+
+// Gets the codec payload type from an a=rtpmap:X line.
+function getCodecPayloadType(sdpLine) {
+  const pattern = new RegExp('a=rtpmap:(\\d+) \\w+\\/\\d+');
+  const result = sdpLine.match(pattern);
+  return (result && result.length === 2) ? result[1] : null;
+}
+
+// Returns a new m= line with the specified codec as the first one.
+function setDefaultCodec(mLine, payload) {
+  const elements = mLine.split(' ');
+
+  // Just copy the first three parameters; codec order starts on fourth.
+  const newLine = elements.slice(0, 3);
+
+  // Put target payload first and copy in the rest.
+  newLine.push(payload);
+  for (let i = 3; i < elements.length; i++) {
+    if (elements[i] !== payload) {
+      newLine.push(elements[i]);
+    }
+  }
+  return newLine.join(' ');
+}

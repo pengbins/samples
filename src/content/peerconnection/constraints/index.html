@@ -23,7 +23,6 @@
     <title>Constraints and statistics</title>
 
     <link rel="icon" sizes="192x192" href="../../../images/webrtc-icon-192x192.png">
-    <link href="//fonts.googleapis.com/css?family=Roboto:300,400,500,700" rel="stylesheet" type="text/css">
     <link rel="stylesheet" href="../../../css/main.css"/>
     <link rel="stylesheet" href="css/main.css"/>
 
@@ -31,12 +30,18 @@
 
 <body>
 
-<div id="container">
+<div id="container" style="max-width:100em">
 
     <h1><a href="//webrtc.github.io/samples/" title="WebRTC samples homepage">WebRTC samples</a> <span>Constraints &amp; statistics</span>
     </h1>
     
     <div>
+        <select id="codec">
+            <option value="AV1">AV1</option>
+            <option value="VP9">VP9</option>
+            <option value="VP8">VP8</option>
+            <option value="H264">h264</option>
+        </select>
         <button id="getMedia">Get media</button>
         <button id="getDisplay">Share screen</button>
         <button id="connect" disabled>Connect</button>
@@ -90,12 +95,12 @@
                 </div>
                 <div class="inputgroup">
                     <div id="minFramerate">
-                        <label>Min frameRate <span>5</span>fps:</label>
-                        <input type="range" min="0" max="60" value="5">
+                        <label>Min frameRate <span>25</span>fps:</label>
+                        <input type="range" min="0" max="60" value="25">
                     </div>
                     <div id="maxFramerate">
-                        <label>Max frameRate <span>5</span>fps:</label>
-                        <input type="range" min="0" max="60" value="5">
+                        <label>Max frameRate <span>25</span>fps:</label>
+                        <input type="range" min="0" max="60" value="25">
                     </div>
                 </div>
             </div>
@@ -122,11 +127,8 @@
     </section>
 
 </div>
-<script src="https://code.highcharts.com.cn/highcharts/highcharts.js"></script>
-<script src="https://code.highcharts.com.cn/highcharts/modules/exporting.js"></script>
-<script src="https://img.hcharts.cn/highcharts-plugins/highcharts-zh_CN.js"></script>
+<script src="http://cdn.highcharts.com.cn/highcharts/highcharts.js"></script>
 <script src="js/main.js" async></script>
-<script src="../../../js/lib/ga.js"></script>
 <script src="../../../js/lib/adapter-latest.js"></script>
 
 </body>
